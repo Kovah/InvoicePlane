@@ -15,7 +15,10 @@ if (!defined('BASEPATH'))
  * @link		https://invoiceplane.com
  * 
  */
-
+if (file_exists("database_empty.php")) {
+ 	header("Location: index.php/setup");
+ 	die();
+ }
 class Base_Controller extends MX_Controller
 {
 
