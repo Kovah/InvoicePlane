@@ -59,3 +59,10 @@ ALTER TABLE ip_users MODIFY COLUMN user_vat_id VARCHAR(500);
 ALTER TABLE ip_users MODIFY COLUMN user_tax_code VARCHAR(500);
 ALTER TABLE ip_users MODIFY COLUMN user_psalt VARCHAR(500);
 ALTER TABLE ip_users MODIFY COLUMN user_tax_code VARCHAR(500);
+
+# IP-411 - Add option to apply discounts before or after taxes
+INSERT INTO `ip_settings` (`setting_key`, `setting_value`)
+VALUES ('invoice_discount_calculation', 'post-tax');
+
+INSERT INTO `ip_settings` (`setting_key`, `setting_value`)
+VALUES ('item_discount_calculation', 'pre-tax');

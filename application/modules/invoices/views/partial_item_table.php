@@ -163,7 +163,8 @@
                 </td>
                 <td class="td-icon text-right td-vert-middle">
                     <?php if ($invoice->is_read_only != 1): ?>
-                        <a href="<?php echo site_url('invoices/delete_item/' . $invoice->invoice_id . '/' . $item->item_id); ?>" title="<?php echo lang('delete'); ?>">
+                        <a href="<?php echo site_url('invoices/delete_item/' . $invoice->invoice_id . '/' . $item->item_id); ?>"
+                           title="<?php echo lang('delete'); ?>">
                             <i class="fa fa-trash-o text-danger"></i>
                         </a>
                     <?php endif; ?>
@@ -239,6 +240,38 @@
                 <td><?php echo lang('item_tax'); ?></td>
                 <td class="amount"><?php echo format_currency($invoice->invoice_item_tax_total); ?></td>
             </tr>
+
+            <?php if ($this->mdl_settings->setting('invoice_discount_calculation') == 'pre-tax') { ?>
+                <tr>
+                    <td class="td-vert-middle"><?php echo lang('discount'); ?></td>
+                    <td class="clearfix">
+                        <div class="discount-field">
+                            <div class="input-group input-group-sm">
+                                <input id="invoice_discount_amount" name="invoice_discount_amount"
+                                       class="discount-option form-control input-sm amount"
+                                       value="<?php echo($invoice->invoice_discount_amount != 0 ? $invoice->invoice_discount_amount : ''); ?>"
+                                    <?php if ($invoice->is_read_only == 1) {
+                                        echo 'disabled="disabled"';
+                                    } ?>>
+
+                                <div
+                                    class="input-group-addon"><?php echo $this->mdl_settings->setting('currency_symbol'); ?></div>
+                            </div>
+                        </div>
+                        <div class="discount-field">
+                            <div class="input-group input-group-sm">
+                                <input id="invoice_discount_percent" name="invoice_discount_percent"
+                                       value="<?php echo($invoice->invoice_discount_percent != 0 ? $invoice->invoice_discount_percent : ''); ?>"
+                                       class="discount-option form-control input-sm amount"
+                                    <?php if ($invoice->is_read_only == 1) {
+                                        echo 'disabled="disabled"';
+                                    } ?>>
+                                <div class="input-group-addon">&percnt;</div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            <?php } ?>
             <tr>
                 <td><?php echo lang('invoice_tax'); ?></td>
                 <td>
@@ -257,35 +290,38 @@
                     } ?>
                 </td>
             </tr>
-            <tr>
-                <td class="td-vert-middle"><?php echo lang('discount'); ?></td>
-                <td class="clearfix">
-                    <div class="discount-field">
-                        <div class="input-group input-group-sm">
-                            <input id="invoice_discount_amount" name="invoice_discount_amount"
-                                   class="discount-option form-control input-sm amount"
-                                   value="<?php echo($invoice->invoice_discount_amount != 0 ? $invoice->invoice_discount_amount : ''); ?>"
-                                <?php if ($invoice->is_read_only == 1) {
-                                echo 'disabled="disabled"';
-                            } ?>>
+            <?php if ($this->mdl_settings->setting('invoice_discount_calculation') == 'post-tax') { ?>
+                <tr>
+                    <td class="td-vert-middle"><?php echo lang('discount'); ?></td>
+                    <td class="clearfix">
+                        <div class="discount-field">
+                            <div class="input-group input-group-sm">
+                                <input id="invoice_discount_amount" name="invoice_discount_amount"
+                                       class="discount-option form-control input-sm amount"
+                                       value="<?php echo($invoice->invoice_discount_amount != 0 ? $invoice->invoice_discount_amount : ''); ?>"
+                                    <?php if ($invoice->is_read_only == 1) {
+                                        echo 'disabled="disabled"';
+                                    } ?>>
 
-                            <div
-                                class="input-group-addon"><?php echo $this->mdl_settings->setting('currency_symbol'); ?></div>
+                                <div
+                                    class="input-group-addon"><?php echo $this->mdl_settings->setting('currency_symbol'); ?></div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="discount-field">
-                        <div class="input-group input-group-sm">
-                            <input id="invoice_discount_percent" name="invoice_discount_percent"
-                                   value="<?php echo($invoice->invoice_discount_percent != 0 ? $invoice->invoice_discount_percent : ''); ?>"
-                                   class="discount-option form-control input-sm amount"
-                                <?php if ($invoice->is_read_only == 1) {
-                                    echo 'disabled="disabled"';
-                                } ?>>
-                            <div class="input-group-addon">&percnt;</div>
+                        <div class="discount-field">
+                            <div class="input-group input-group-sm">
+                                <input id="invoice_discount_percent" name="invoice_discount_percent"
+                                       value="<?php echo($invoice->invoice_discount_percent != 0 ? $invoice->invoice_discount_percent : ''); ?>"
+                                       class="discount-option form-control input-sm amount"
+                                    <?php if ($invoice->is_read_only == 1) {
+                                        echo 'disabled="disabled"';
+                                    } ?>>
+                                <div class="input-group-addon">&percnt;</div>
+                            </div>
                         </div>
-                    </div>
-                </td>
-            </tr>
+                    </td>
+                </tr>
+            <?php } ?>
+
             <tr>
                 <td><?php echo lang('total'); ?></td>
                 <td class="amount"><b><?php echo format_currency($invoice->invoice_total); ?></b></td>

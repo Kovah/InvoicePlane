@@ -20,6 +20,9 @@
         <a data-toggle="tab" href="#settings-general"><?php echo lang('general'); ?></a>
     </li>
     <li>
+        <a data-toggle="tab" href="#settings-amounts"><?php echo lang('amounts'); ?></a>
+    </li>
+    <li>
         <a data-toggle="tab" href="#settings-invoices"><?php echo lang('invoices'); ?></a>
     </li>
     <li>
@@ -49,6 +52,10 @@
                 <?php $this->layout->load_view('layout/alerts'); ?>
 
                 <?php $this->layout->load_view('settings/partial_settings_general'); ?>
+            </div>
+
+            <div id="settings-amounts" class="tab-pane active">
+                <?php $this->layout->load_view('settings/partial_settings_amounts'); ?>
             </div>
 
             <div id="settings-invoices" class="tab-pane">
