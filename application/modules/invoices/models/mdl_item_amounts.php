@@ -51,7 +51,7 @@ class Mdl_Item_Amounts extends CI_Model
         if ($this->mdl_settings->setting('item_discount_calculation') == 'post-tax') {
             $item_total = $item_subtotal_post_tax - $item_discount;
         } else {
-            $item_total = $item_subtotal;
+            $item_total = $item_subtotal_post_tax;
         }
 
         $db_array = array(
