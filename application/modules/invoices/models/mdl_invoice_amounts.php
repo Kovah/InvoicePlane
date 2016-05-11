@@ -120,11 +120,29 @@ class Mdl_Invoice_Amounts extends CI_Model
             // Loop through the invoice taxes and update the amount for each of the applied invoice taxes
             foreach ($invoice_tax_rates as $invoice_tax_rate) {
                 if ($invoice_tax_rate->include_item_tax) {
+
                     // The invoice tax rate should include the applied item tax
-                    $invoice_tax_rate_amount = ($invoice_amount->invoice_item_subtotal + $invoice_amount->invoice_item_tax_total) * ($invoice_tax_rate->invoice_tax_rate_percent / 100);
+                    if ($this->mdl_settings->setting('invoice_discount_calculation') == 'pre-tax') {
+                        $item_subtotal = ($invoice_amount->invoice_item_subtotal + $invoice_amount->invoice_item_tax_total);
+                        $item_subtotal = $this->calculate_discount($invoice_id, $item_subtotal);
+                    } else {
+                        $item_subtotal = ($invoice_amount->invoice_item_subtotal + $invoice_amount->invoice_item_tax_total);
+                    }
+
+                    $invoice_tax_rate_amount = $item_subtotal * ($invoice_tax_rate->invoice_tax_rate_percent / 100);
+
                 } else {
+
                     // The invoice tax rate should not include the applied item tax
-                    $invoice_tax_rate_amount = $invoice_amount->invoice_item_subtotal * ($invoice_tax_rate->invoice_tax_rate_percent / 100);
+                    if ($this->mdl_settings->setting('invoice_discount_calculation') == 'pre-tax') {
+                        $item_subtotal = $invoice_amount->invoice_item_subtotal;
+                        $item_subtotal = $this->calculate_discount($invoice_id, $item_subtotal);
+                    } else {
+                        $item_subtotal = $invoice_amount->invoice_item_subtotal;
+                    }
+
+                    $invoice_tax_rate_amount = $item_subtotal * ($invoice_tax_rate->invoice_tax_rate_percent / 100);
+
                 }
 
                 // Update the invoice tax rate record
@@ -142,8 +160,16 @@ class Mdl_Invoice_Amounts extends CI_Model
             $invoice_amount = $this->db->where('invoice_id', $invoice_id)->get('ip_invoice_amounts')->row();
 
             // Recalculate the invoice total and balance
-            $invoice_total = $invoice_amount->invoice_item_subtotal + $invoice_amount->invoice_item_tax_total + $invoice_amount->invoice_tax_total;
-            $invoice_total = $this->calculate_discount($invoice_id, $invoice_total);
+            $item_total = $invoice_amount->invoice_item_subtotal + $invoice_amount->invoice_item_tax_total;
+
+            // Calculate discount if applicable
+            if ($this->mdl_settings->setting('invoice_discount_calculation') == 'post-tax') {
+                $invoice_subtotal = $this->calculate_discount($invoice_id, $item_total);
+                $invoice_total = $invoice_subtotal + $invoice_amount->invoice_tax_total;
+            } else {
+                $invoice_total = $item_total + $invoice_amount->invoice_tax_total;
+            }
+
             $invoice_balance = $invoice_total - $invoice_amount->invoice_paid;
 
             // Update the invoice amount record
